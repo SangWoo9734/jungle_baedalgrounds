@@ -9,6 +9,10 @@
     <div>
       <img src={{ url_for('static', filename = image) }} alt="logo" />
       <label>
+        <span>이름 :</span>
+        <input type="text" />
+      </label>
+      <label>
         <span>ID :</span>
         <input type="text" />
       </label>
@@ -16,10 +20,10 @@
         <span>PW :</span>
         <input type="password" />
       </label>
-      <div>
-        <button type="button">로그인</button>
-        <button type="button">회원가입</button>
-      </div>
+      <label>
+        <input type="password" />
+      </label>
+      <button type="button">회원가입</button>
     </div>
   </body>
 </html>
