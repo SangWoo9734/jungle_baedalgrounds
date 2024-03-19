@@ -5,12 +5,13 @@ endblock %} {% block content %}
 >
   <img class="max-w-xs" src={{ url_for('static', filename = image) }} alt="logo"
   />
-  <form class="w-full max-w-sm flex flex-col justify-center items-center">
+  <div class="w-full max-w-sm flex flex-col justify-center items-center">
     <input
       class="w-full my-1 p-2 border rounded"
       type="text"
       placeholder="아이디"
       name="id"
+      id = "userid"
     />
     <input
       class="w-full my-1 p-2 border rounded"
@@ -18,18 +19,22 @@ endblock %} {% block content %}
       type="password"
       placeholder="비밀번호"
       name="password"
+      id = "userpw"
     />
 
     <div class="w-full mt-3 flex justify-between items-center gap-1 text-white">
-      <input
+      <button
         class="w-1/2 p-1 border-1 rounded bg-blue-400"
-        type="submit"
-        value="로그인"
-      />
-      <button class="w-1/2 p-1 border-1 rounded bg-blue-300" type="button">
+        type="button"
+        onclick = "login()"
+       >로그인</button>
+      <button class="w-1/2 p-1 border-1 rounded bg-blue-300" type="button" onclick = "signpage()" >
         회원가입
       </button>
     </div>
-  </form>
+  </div>
+
 </div>
+
+
 {% endblock %}

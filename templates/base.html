@@ -6,8 +6,138 @@
     <title>{% block title %}{% endblock %}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
+    <!-- signin -->
+
+    <script>
+      function signIn() {
+
+      let name = $('#username').val()
+      let id = $('#userid').val()
+      let pw = $('#userpw').val()
+      let pw_confirm = $('#userpw_confirm').val()
+
+      if(name == ''){
+        alert("이름을 입력하시오.")
+      }
+      else if(id == ''){
+        alert("id를 입력하시오.")
+      }
+      else if(pw == ''){
+        alert("비밀번호를 입력하지 않았습니다.")
+      }
+      else if(pw_confirm == ''){
+        alert("비밀번호 확인을 입력하지 않았습니다.")
+      }
+
+      
+
+
+
+      else if (pw != pw_confirm){
+        alert("비밀번호가 일치하지 않습니다.")
+        //document.getElementById("userpw").value = ""
+        //document.getElementById("userpw_confirm").value = ""
+        $('#userpw').val("");
+        $('#userpw_confirm').val("");
+
+
+      }
+
+      else{
+        $.ajax({
+            type: "POST",
+            url: "/api/signIn",
+            data: {
+                id_give: $('#userid').val(),
+                pw_give: $('#userpw').val(),
+                name_give: $('#username').val()
+            },
+            success: function (response) {
+                if (response['result'] == 'success') {
+                    alert('회원가입이 완료되었습니다.')
+                    window.location.href = '/login'
+                } else {
+                    alert(response['msg'])
+                }
+            }
+        })
+    }
+  }
+
+
+  function confirm() {
+    $.ajax({
+        type: "POST",
+        url: "/api/signIn/confirm",
+        data: {
+          id_give: $('#userid').val(), 
+        },
+        success: function (response) {
+            if (response['result'] == 'success') {
+                alert('사용가능한 ID 입니다.')
+            } else {
+                alert(response['msg'])
+                $('#userid').val("")
+            }
+        }
+    })
+}
+
+    </script>
+
+    
+
+        <!-- login -->
+
+    <script>
+      {% if msg %}
+          alert("{{ msg }}")
+      {% endif %}
+      
+      function login() {
+          $.ajax({
+              type: "POST",
+              url: "/api/login",
+              data: {
+                id_give: $('#userid').val(), 
+                pw_give: $('#userpw').val()
+              },
+              success: function (response) {
+                  if (response['result'] == 'success') {
+                      $.cookie('mytoken', response['token']);
+
+                      alert('로그인 완료')
+                      window.location.href = '/'
+                  } else {
+                      alert(response['msg'])
+                  }
+              }
+          })
+      }
+      function signpage() {
+        window.location.href = '/signIn'
+      }
+
+      function alrt(){
+        let name = $('#username').val()
+        let id = $('#userid').val()
+        let pw = $('#userpw').val()
+        let 
+
+      }
+
+      
+
+  </script>
+
   </head>
   <body>
     {% block content %}{% endblock %}
   </body>
+
 </html>
