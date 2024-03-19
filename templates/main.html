@@ -4,8 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <script>
+      function go_signup() {
+          window.location.href = '/signup'
+      }
+
+      function logout() {
+          window.location.href = '/login'
+      }
+
+      function hi() {
+          $.ajax({
+              type: "GET",
+              url: "/api/isAuth",
+              data: {},
+              success: function (response) {
+                  if (response['result'] == 'success') {
+                      let name = response['name']
+                      alert(`${name}`)
+                  } else {
+                      alert(response['msg'])
+                      window.location.href = '/login'
+                  }
+              }
+          })
+      }
+    </script>
   </head>
   <body>
     <h1>HI</h1>
+    <button onclick = "hi()">hi</button>
+    <button onclick="logout()">로그아웃</button>
   </body>
 </html>
