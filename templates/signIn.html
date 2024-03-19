@@ -1,29 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div>
-      <img src={{ url_for('static', filename = image) }} alt="logo" />
-      <label>
-        <span>이름 :</span>
-        <input type="text" />
-      </label>
-      <label>
-        <span>ID :</span>
-        <input type="text" />
-      </label>
-      <label>
-        <span>PW :</span>
-        <input type="password" />
-      </label>
-      <label>
-        <input type="password" />
-      </label>
-      <button type="button">회원가입</button>
+{% extends "base.html" %} {% block title %}{{service_title + ' - 회원가입'}}{%
+endblock %} {% block content %}
+<div
+  class="max-w-screen-sm flex flex-col justify-center items-center h-screen m-auto text-sm"
+>
+  <img class="max-w-xs" src={{ url_for('static', filename = image) }} alt="logo"
+  />
+  <form class="w-full max-w-sm flex flex-col justify-center items-center">
+    <input
+      class="w-full my-1 p-2 border rounded"
+      type="text"
+      placeholder="이름"
+      name="name"
+    />
+    <div class="w-full my-1 flex justify-center items-center gap-1">
+      <input
+        class="flex-1 p-2 border rounded"
+        type="text"
+        placeholder="아이디"
+        name="id"
+      />
+      <button
+        class="w-20 h-full p-1 border-1 rounded bg-gray-400 text-white"
+        type="button"
+      >
+        중복확인
+      </button>
     </div>
-  </body>
-</html>
+    <input
+      class="w-full my-1 p-2 border rounded"
+      type="password"
+      placeholder="비밀번호"
+      name="password"
+    />
+    <input
+      class="w-full my-1 p-2 border rounded"
+      type="password"
+      placeholder="비밀번호 확인"
+      name="password-check"
+    />
+    <input
+      class="w-full p-1 border-1 rounded bg-blue-300 text-white"
+      type="submit"
+      value="회원가입"
+    />
+  </form>
+</div>
+{% endblock %}

@@ -1,25 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div>
-      <img src={{ url_for('static', filename = image) }} alt="logo" />
-      <label>
-        <span>ID :</span>
-        <input type="text" />
-      </label>
-      <label>
-        <span>PW :</span>
-        <input type="password" />
-      </label>
-      <div>
-        <button type="button">로그인</button>
-        <button type="button">회원가입</button>
-      </div>
+{% extends "base.html" %} {% block title %}{{service_title + ' - 로그인'}}{%
+endblock %} {% block content %}
+<div
+  class="max-w-screen-sm flex flex-col justify-center items-center h-screen m-auto text-sm"
+>
+  <img class="max-w-xs" src={{ url_for('static', filename = image) }} alt="logo"
+  />
+  <form class="w-full max-w-sm flex flex-col justify-center items-center">
+    <input
+      class="w-full my-1 p-2 border rounded"
+      type="text"
+      placeholder="아이디"
+      name="id"
+    />
+    <input
+      class="w-full my-1 p-2 border rounded"
+      class=""
+      type="password"
+      placeholder="비밀번호"
+      name="password"
+    />
+
+    <div class="w-full mt-3 flex justify-between items-center gap-1 text-white">
+      <input
+        class="w-1/2 p-1 border-1 rounded bg-blue-400"
+        type="submit"
+        value="로그인"
+      />
+      <button class="w-1/2 p-1 border-1 rounded bg-blue-300" type="button">
+        회원가입
+      </button>
     </div>
-  </body>
-</html>
+  </form>
+</div>
+{% endblock %}
