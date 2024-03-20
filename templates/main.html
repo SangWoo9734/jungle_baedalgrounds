@@ -31,20 +31,18 @@ block content %}
       </button>
     </div>
     <div class="m-4 text-sm">
-      <h4 class="mt-4 mb-2 text-center text-lg font-bold">[ 오늘의 학식 ]</h4>
+      <h4 class="mt-4 mb-2 text-center text-lg font-bold">
+        [ {{ food_table_data.date }} {{ food_table_data.day }} 오늘의 학식 ]
+      </h4>
       <div class="flex gap-2">
         <div class="bg-blue-400 p-4 text-center rounded-lg">
           <p class="mb-3 text-lg font-bold">중식</p>
           <ul
             class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
           >
-            <li>쌀밥</li>
-            <li>사골우거지국</li>
-            <li>돈사태김치찜</li>
-            <li>감자고로케</li>
-            <li>도시락김</li>
-            <li>깍두기</li>
-            <li>요구르트</li>
+            {% for menu in food_table_data.lunch_menu %}
+            <li>{{ menu }}</li>
+            {% endfor %}
           </ul>
         </div>
         <div class="bg-blue-400 p-4 text-center rounded-lg">
@@ -52,13 +50,9 @@ block content %}
           <ul
             class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
           >
-            <li>쌀밥</li>
-            <li>사골우거지국</li>
-            <li>돈사태김치찜</li>
-            <li>감자고로케</li>
-            <li>도시락김</li>
-            <li>깍두기</li>
-            <li>요구르트</li>
+            {% for menu in food_table_data.dinner_menu %}
+            <li>{{ menu }}</li>
+            {% endfor %}
           </ul>
         </div>
       </div>

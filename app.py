@@ -51,12 +51,20 @@ CATEGORY = [ '중식', '양식', '일식', '한식', '패스트푸트', '분식'
 # 메인 페이지
 @app.route('/')
 def deliveryBoardPage():
-# JWT 토큰
   cookies = request.cookies
   card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies).json()
   user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
+  food_table_data = requests.get(API_PATH + '/api/food_table').json()["data"]
 
-  return render_template('main.html', service_title=SURVICE_TITLE, image =LOGO_URL, card_data=card_data, user_data=user_data, category_list=CATEGORY)
+  return render_template(
+    'main.html',
+    service_title=SURVICE_TITLE,
+    image =LOGO_URL,
+    card_data=card_data,
+    user_data=user_data,
+    category_list=CATEGORY,
+    food_table_data= food_table_data
+  )
 
 # 로그인
 @app.route('/login')
@@ -232,19 +240,19 @@ def remove_card():
 
 ## 식단표 조회
 @app.route('/api/food_table',methods=['GET'])
-def get_data():
-    current_date = datetime.today().strftime('%Y-%m-%d')
+def get_food_table_data():
+    current_date = datetime.datetime.today().strftime('%Y-%m-%d')
     data = db.dormitory_menu.find_one({'date': current_date})
     ###try except로 바꿀지 고민
     if data:
         return jsonify({'result':'success', 'data':data})
     else:
-        subprocess.run(['python', 'dormitory_menu.py'])      
-        get_data() 
+        subprocess.run(['python', './utils/dormitory_menu.py'])      
+        get_food_table_data() 
         
 ## 사용자 정보 조회
 @app.route('/api/user_info',methods=['GET'])
-def api_userInfo():
+def api_user_info():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
