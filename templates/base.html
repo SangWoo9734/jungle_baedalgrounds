@@ -4,8 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
+    <!-- General CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='../static/styles/general.css') }}"
+      type="text/css"
+    />
     <!-- favicon -->
-    <link rel="icon" href="../static/images/favicon.ico" type="image/x-icon" />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='../static/images/favicon.ico') }}"
+      type="image/x-icon"
+    />
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -13,7 +24,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
     <!-- signin -->
-
     <script>
       function signIn() {
         let name = $("#username").val();
@@ -99,7 +109,6 @@
       function signpage() {
         window.location.href = "/signIn";
       }
-      
     </script>
   </head>
   <body>

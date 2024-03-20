@@ -4,9 +4,9 @@ block content %}
 <!-- left area -->
 <div class="flex flex-col lg:flex-row lg:w-full h-screen">
   <div
-    class="flex flex-col justify-evenly items-center w-full p-3 bg-gray-500 sm:flex-row lg:flex-col"
+    class="flex flex-col justify-evenly items-center  w-full h-full  max-h-screen lg:max-w-xs p-8 bg-gray-400 sm:flex-row lg:flex-col"
   >
-    <div class="m-4 text-center">
+    <div class="mx-1 text-center">
       <img class='w-40'src={{ url_for('static', filename = image) }} alt="logo"
       />
       <img
@@ -30,15 +30,15 @@ block content %}
         로그아웃
       </button>
     </div>
-    <div class="m-4 text-sm">
+    <div class="mx-2 text-sm">
       <h4 class="mt-4 mb-2 text-center text-lg font-bold">
-        [ {{ food_table_data.date }} {{ food_table_data.day }} 오늘의 학식 ]
+        {{ food_table_data.date }} {{ food_table_data.day }}<br/>🍱 오늘의 학식 🍱
       </h4>
       <div class="flex gap-2">
         <div class="bg-blue-400 p-4 text-center rounded-lg">
-          <p class="mb-3 text-lg font-bold">중식</p>
+          <p class="mb-3 text-lg font-bold">🌞 중식 🌞</p>
           <ul
-            class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
+            class="flex flex-row justify-evenly justify-center sm:flex-col gap-2 flex-wrap "
           >
             {% for menu in food_table_data.lunch_menu %}
             <li>{{ menu }}</li>
@@ -46,9 +46,9 @@ block content %}
           </ul>
         </div>
         <div class="bg-blue-400 p-4 text-center rounded-lg">
-          <p class="mb-3 text-lg font-bold">석식</p>
+          <p class="mb-3 text-lg font-bold">🌝 석식 🌝</p>
           <ul
-            class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
+            class="flex flex-row justify-evenly justify-center sm:flex-col gap-2 flex-wrap"
           >
             {% for menu in food_table_data.dinner_menu %}
             <li>{{ menu }}</li>
@@ -59,7 +59,7 @@ block content %}
     </div>
   </div>
   <!-- right -->
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full flex-1">
     <header
       class="flex justify-center items-center m-4 p-3 rounded bg-gray-300"
     >
@@ -79,35 +79,42 @@ block content %}
         {% endfor %}
       </ul>
     </header>
-    <h4 class="m-1 px-3">
+    <h4 class="m-1 px-3 lg:px-10">
       대기중인 모임
-      <span class="text-red-500 font-bold">{{ card_data|length }}</span> 개
+      <span class="text-red-500 font-bold text-xl">{{ card_data|length }}</span> 개
     </h4>
-    <div class="px-3 flex-1 overflow-scroll">
+    {% if card_data|length > 0 %}
+    <div class="px-3 lg:px-10 flex-1 overflow-scroll">
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 py-3">
         {% for card in card_data %}
-        <div class="p-2 rounded-md bg-gray-200 text-sm">
+        <div class="p-3 rounded-md bg-gray-200 text-sm">
           <img
             src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
             alt="delivery thumbnail"
             class="w-full rounded-md"
           />
-          <h4 class="text-lg">{{ card.title }}~</h4>
-          <p class="mb-1">{{ card.master_user_name }}</p>
-          <p class="mb-1">{{ card.content }}</p>
-          <ul class="flex items-center">
+          <h4 class="text-lg my-1">{{ card.title }}~</h4>
+          <p class="my-1">{{ card.master_user_name }}</p>
+          <p class="my-1 h-14 overflow-scroll">{{ card.content }}</p>
+          <ul class="flex items-center my-1">
             <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">
               #{{ card.category }}
             </li>
           </ul>
           <div class="flex justify-between text-xs flex-wrap my-1">
-            <p>현재 {{ card.member_count }}명</p>
-            <p>마감시간: ~ {{ card.time_limit }}</p>
+            <div class='flex items-center'>
+              <img src='../static/images/user.png' alt="user" class="w-4 h-4 mr-1" />
+              <p> 현재 {{ card.member_count }}명</p>
+            </div>
+            <div class='flex items-center'>
+              <img src='../static/images/clock.png' alt="user" class="w-4 h-4 mr-1" />
+              <p>마감시간: ~ {{ card.time_limit }}</p>
+            </div>
           </div>
 
           {% if card.master_user_id == user_data.id %}
           <button
-            class="w-full py-1 bg-green-400 text-white"
+            class="w-full py-1 rounded bg-green-400 text-white"
             onclick="deleteGroup('{{ card._id }}')"
           >
             삭제
@@ -115,7 +122,7 @@ block content %}
 
           {% elif card.is_join %}
           <button
-            class="w-full py-1 bg-red-400 text-white"
+            class="w-full py-1 rounded bg-red-400 text-white"
             onclick="cancelGroup('{{ card._id }}')"
           >
             취소
@@ -123,7 +130,7 @@ block content %}
 
           {% else %}
           <button
-            class="w-full py-1 bg-blue-400 text-white"
+            class="w-full py-1 rounded bg-blue-400 text-white"
             onclick="joinGroup('{{ card._id }}', '{{ card.openchat_url }}')"
           >
             참여
@@ -133,199 +140,209 @@ block content %}
         {% endfor %}
       </div>
     </div>
-  </div>
+    {% else %}
 
-  <!-- Group Register Form -->
-  <div
-    id="create-group-form"
-    class="w-screen h-screen absolute top-0 left-0 flex flex-col justify-center items-center bg-gray-500 bg-opacity-50 hidden"
-  >
-    <div class="w-80 p-4 rounded bg-gray-200">
-      <div>
-        <p class="mt-2 mb-1 font-bold">사진 업로드</p>
-        <input type="file" accept="image/*" id="thumbnail_url" />
-        <p class="mt-2 mb-1 font-bold">제목</p>
-        <input
-          class="w-full p-1 border border-gray-400 rounded"
-          type="text"
-          id="title"
-        />
-        <p class="mt-2 mb-1 font-bold">내용</p>
-        <input
-          class="w-full p-1 border border-gray-400 rounded"
-          type="textarea"
-          id="content"
-        />
-        <p class="mt-2 mb-1 font-bold">마감시간</p>
-        <input type="time" id="time_limit" />
-
-        <p class="mt-2 mb-1 font-bold">메뉴 카테고리</p>
-        <select id="category">
-          {% for category in category_list %}
-          <option value="{{ category }}">#{{ category }}</option>
-          {% endfor %}
-        </select>
-        <p class="mt-2 mb-1 font-bold">오픈채팅방 URL</p>
-        <input
-          class="w-full p-1 border border-gray-400 rounded"
-          type="text"
-          id="openchat_url"
-        />
-        <div class="flex gap-2 mt-2">
-          <button
-            class="w-full py-1 rounded text-white bg-red-400"
-            onclick="closeForm()"
-          >
-            취소
-          </button>
-          <button
-            class="w-full py-1 rounded text-white bg-blue-400"
-            onclick="sendForm()"
-          >
-            등록
-          </button>
-        </div>
-      </div>
+    <div class="w-full h-full flex justify-center items-center p-3">
+      <p class="text-2xl font-bold">모임이 없습니다. 🤷🏻</p>
     </div>
-    {% block form %}{% endblock %}
+    {% endif %}
+
+        </div>
+
+        <!-- Group Register Form -->
+        <div
+          id="create-group-form"
+          class="w-screen h-screen absolute top-0 left-0 flex flex-col justify-center items-center bg-gray-500 bg-opacity-50 hidden"
+        >
+          <div class="w-80 p-4 rounded bg-gray-200">
+            <div>
+              <p class="mt-2 mb-1 font-bold">사진 업로드</p>
+              <input type="file" accept="image/*" id="thumbnail_url" />
+              <p class="mt-2 mb-1 font-bold">제목</p>
+              <input
+                class="w-full p-1 border border-gray-400 rounded"
+                type="text"
+                id="title"
+              />
+              <p class="mt-2 mb-1 font-bold">내용</p>
+              <input
+                class="w-full p-1 border border-gray-400 rounded"
+                type="textarea"
+                id="content"
+              />
+              <p class="mt-2 mb-1 font-bold">마감시간</p>
+              <input type="time" id="time_limit" />
+
+              <p class="mt-2 mb-1 font-bold">메뉴 카테고리</p>
+              <select id="category">
+                {% for category in category_list %}
+                <option value="{{ category }}">#{{ category }}</option>
+                {% endfor %}
+              </select>
+              <p class="mt-2 mb-1 font-bold">오픈채팅방 URL</p>
+              <input
+                class="w-full p-1 border border-gray-400 rounded"
+                type="text"
+                id="openchat_url"
+              />
+              <div class="flex gap-2 mt-2">
+                <button
+                  class="w-full py-1 rounded text-white bg-red-400"
+                  onclick="closeForm()"
+                >
+                  취소
+                </button>
+                <button
+                  class="w-full py-1 rounded text-white bg-blue-400"
+                  onclick="sendForm()"
+                >
+                  등록
+                </button>
+              </div>
+            </div>
+          </div>
+          {% block form %}{% endblock %}
+        </div>
+
+        <script>
+          const clickCategoryTag = (categoryIndex) => {
+            const selectedCategory = document.getElementById(
+              `category-${categoryIndex}`
+            );
+
+            if (selectedCategory.classList.contains("select")) {
+              window.location.replace("/");
+            } else {
+              const filterText = selectedCategory.textContent.trim().slice(1);
+              window.location.replace(`/?filter=${filterText}`);
+            }
+          };
+
+          const logout = () => {
+            window.location.href = "/login";
+            $.removeCookie("mytoken", { path: "/" });
+          };
+
+          const openForm = () => {
+            const form = document.getElementById("create-group-form");
+            form.classList.remove("hidden");
+          };
+
+          const closeForm = () => {
+            const form = document.getElementById("create-group-form");
+            form.classList.add("hidden");
+          };
+
+          const sendForm = () => {
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+            const timeLimit = document.getElementById("time_limit").value;
+            const openChatURL = document.getElementById("openchat_url").value;
+            const category = document.getElementById("category").value;
+
+            if (
+              title === "" ||
+              content === "" ||
+              timeLimit === "" ||
+              openChatURL === ""
+            ) {
+              alert("모든 필드를 입력해주세요.");
+              return;
+            }
+
+            $.ajax({
+              type: "POST",
+              url: "/api/post_card",
+              data: {
+                title,
+                content,
+                time_limit: timeLimit,
+                openchat_url: openChatURL,
+                category,
+                thumbnail_url: "",
+              },
+
+              success: function (response) {
+                const result = response["result"];
+                if (result == "success") {
+                  alert(result);
+                  closeForm();
+                  window.location.href = "/";
+                } else {
+                  alert(response["msg"]);
+                  $.removeCookie("mytoken", { path: "/" });
+                  window.location.href = "/login";
+                }
+              },
+            });
+          };
+
+          const joinGroup = (cardId, openchatUrl) => {
+            $.ajax({
+              type: "POST",
+              url: "/api/add_join_user",
+              data: {
+                _id: cardId,
+              },
+              success: (response) => {
+                if (response["result"] == "success") {
+                  alert(response["result"]);
+                  window.open(openchatUrl);
+                  window.location.href = "/";
+                } else {
+                  alert(response["msg"]);
+                  $.removeCookie("mytoken", { path: "/" });
+                  window.location.href = "/login";
+                }
+              },
+              error: (error) => {
+                alert(error.msg);
+                location.reload("/");
+              },
+            });
+          };
+          const cancelGroup = (cardId) => {
+            $.ajax({
+              type: "POST",
+              url: "/api/remove_join_user",
+              data: {
+                _id: cardId,
+              },
+              success: (response) => {
+                if (response["result"] == "success") {
+                  alert(response["result"]);
+                  window.location.href = "/";
+                } else {
+                  alert(response["msg"]);
+                  $.removeCookie("mytoken", { path: "/" });
+                  window.location.href = "/login";
+                }
+              },
+            });
+          };
+
+          const deleteGroup = (cardId) => {
+            $.ajax({
+              type: "POST",
+              url: "/api/remove_card",
+              data: {
+                _id: cardId,
+              },
+              success: (response) => {
+                if (response["result"] == "success") {
+                  alert(response["result"]);
+                  window.location.href = "/";
+                } else {
+                  alert(response["msg"]);
+                  $.removeCookie("mytoken", { path: "/" });
+                  window.location.href = "/login";
+                }
+              },
+            });
+          };
+        </script>
+      </div>
+      {% endblock %}
+    </div>
   </div>
-
-  <script>
-    const clickCategoryTag = (categoryIndex) => {
-      const selectedCategory = document.getElementById(
-        `category-${categoryIndex}`
-      );
-
-      if (selectedCategory.classList.contains("select")) {
-        window.location.replace("/");
-      } else {
-        const filterText = selectedCategory.textContent.trim().slice(1);
-        window.location.replace(`/?filter=${filterText}`);
-      }
-    };
-
-    const logout = () => {
-      window.location.href = "/login";
-      $.removeCookie("mytoken", { path: "/" });
-    };
-
-    const openForm = () => {
-      const form = document.getElementById("create-group-form");
-      form.classList.remove("hidden");
-    };
-
-    const closeForm = () => {
-      const form = document.getElementById("create-group-form");
-      form.classList.add("hidden");
-    };
-
-    const sendForm = () => {
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
-      const timeLimit = document.getElementById("time_limit").value;
-      const openChatURL = document.getElementById("openchat_url").value;
-      const category = document.getElementById("category").value;
-
-      if (
-        title === "" ||
-        content === "" ||
-        timeLimit === "" ||
-        openChatURL === ""
-      ) {
-        alert("모든 필드를 입력해주세요.");
-        return;
-      }
-
-      $.ajax({
-        type: "POST",
-        url: "/api/post_card",
-        data: {
-          title,
-          content,
-          time_limit: timeLimit,
-          openchat_url: openChatURL,
-          category,
-          thumbnail_url: "",
-        },
-
-        success: function (response) {
-          const result = response["result"];
-          if (result == "success") {
-            alert(result);
-            closeForm();
-            window.location.href = "/";
-          } else {
-            alert(response["msg"]);
-            $.removeCookie("mytoken", { path: "/" });
-            window.location.href = "/login";
-          }
-        },
-      });
-    };
-
-    const joinGroup = (cardId, openchatUrl) => {
-      $.ajax({
-        type: "POST",
-        url: "/api/add_join_user",
-        data: {
-          _id: cardId,
-        },
-        success: (response) => {
-          if (response["result"] == "success") {
-            alert(response["result"]);
-            window.open(openchatUrl);
-            window.location.href = "/";
-          } else {
-            alert(response["msg"]);
-            $.removeCookie("mytoken", { path: "/" });
-            window.location.href = "/login";
-          }
-        },
-        error: (error) => {
-          alert(error.msg);
-          location.reload("/");
-        },
-      });
-    };
-    const cancelGroup = (cardId) => {
-      $.ajax({
-        type: "POST",
-        url: "/api/remove_join_user",
-        data: {
-          _id: cardId,
-        },
-        success: (response) => {
-          if (response["result"] == "success") {
-            alert(response["result"]);
-            window.location.href = "/";
-          } else {
-            alert(response["msg"]);
-            $.removeCookie("mytoken", { path: "/" });
-            window.location.href = "/login";
-          }
-        },
-      });
-    };
-
-    const deleteGroup = (cardId) => {
-      $.ajax({
-        type: "POST",
-        url: "/api/remove_card",
-        data: {
-          _id: cardId,
-        },
-        success: (response) => {
-          if (response["result"] == "success") {
-            alert(response["result"]);
-            window.location.href = "/";
-          } else {
-            alert(response["msg"]);
-            $.removeCookie("mytoken", { path: "/" });
-            window.location.href = "/login";
-          }
-        },
-      });
-    };
-  </script>
 </div>
-{% endblock %}
