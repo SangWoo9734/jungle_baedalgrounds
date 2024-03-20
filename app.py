@@ -9,6 +9,7 @@ from flask.json.provider import JSONProvider
 import json
 from bson import ObjectId
 import sys
+import requests
 
 app = Flask(__name__)
 
@@ -38,20 +39,23 @@ app.json = CustomJSONProvider(app)
 secret_key = 'jungbae'
 
 # mongo db
-# client = MongoClient('localhost', 27017)
-# db = client.bdground
-
 client = MongoClient('mongodb://anuhyun:dksdn@3.36.103.219',27017)
-db = client.dbground
+db = client.dbground 
 
 # CONTANTS
 SURVICE_TITLE = "BAEDALGROUNDS"
 LOGO_URL = './images/logo.png'
+API_PATH = 'http://localhost:5001'
 
 # 메인 페이지
 @app.route('/')
 def deliveryBoardPage():
-  return render_template('main.html', service_title=SURVICE_TITLE, image =LOGO_URL)
+# JWT 토큰
+  cookies = request.cookies
+  card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies).json()
+  user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
+
+  return render_template('main.html', service_title=SURVICE_TITLE, image =LOGO_URL, card_data=card_data, user_data=user_data)
 
 # 로그인
 @app.route('/login')
@@ -155,27 +159,26 @@ def post_card():
     except jwt.exceptions.DecodeError:
         return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
 
-
-
 # 데이터베이스로부터 master_user_id,join_user를 제외한 데이터를 받아서 넘겨주며 조회중인 사용자가 포함되어있는지 여부를 나타내는 is_join이 추가되어있습니다
 @app.route('/api/show_card')
 def show_cards():
   token_receive = request.cookies.get('mytoken')
   payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
   user_id= payload['id']
-  cards_data=list(db.cards.find({}, {"master_user_id": 0}))
+  cards_data=list(db.cards.find({}))
   sending_data=[]
   for card_data in cards_data:
     card_data['_id']=str(card_data['_id'])
     member_count=len(card_data['join_user'])
-    card_data["member_count":str(member_count)]
+    card_data["member_count"] = str(member_count)
     if user_id in card_data['join_user']:
-        del card_data['join_user']
-        card_data['is_join']=True
+      del card_data['join_user']
+      card_data['is_join']=True
     else:
-       del card_data['join_user']
-       card_data['is_join']=False
+      del card_data['join_user']
+      card_data['is_join']=False
     sending_data.append(card_data)
+
   return jsonify(sending_data)
 
 # 프론트로부터 _id(문자열)값을 받아 해당하는 모임에 이용자를 참가자로 추가합니다 
@@ -188,7 +191,7 @@ def add_join_user():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.update_one({'_id':obj_card_id},{'$push':{'join_user':user_id}})
-    return "참가원 추가 성공"
+    return jsonify({'result': 'success', 'msg': "참가원 추가 성공"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
@@ -204,13 +207,13 @@ def remove_join_user():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.update_one({'_id':obj_card_id},{'$pull':{'join_user':user_id}})
-    return "참가원 제거 성공"
+    return jsonify({'result': 'success', 'msg': "참가원 제거 성공"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
       return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
 
-# 프론트로부터 _id(문자열)값을 받아 파티장인지 확인 후 해당카드를 제거합니다 
+## 프론트로부터 _id(문자열)값을 받아 파티장인지 확인 후 해당카드를 제거합니다 
 @app.route('/api/remove_card', methods=['POST'])
 def remove_card():
   try:
@@ -219,26 +222,15 @@ def remove_card():
     user_id= payload['id']
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
-    if db.cards.find_one({'_id':obj_card_id})['master_user_id']==user_id:
-      db.cards.delete_one({'_id':obj_card_id})
-      return "카드 제거 성공"
-    else:
-      return "카드제거는 파티장만 할 수 있습니다"
+    db.cards.delete_one({'_id':obj_card_id})
+    return jsonify({'result': 'success', 'msg': "카드 제거 성공"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
       return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
 
-
-# ###클ㄹ이언트 쪽에서 data ={}
-# @app.route('/api/category',methods=['GET'])
-# def api_category():
-#   #id_receive = request.args.get('userid')
-#   category=['중식','양식','한식','패스트푸드','분식','카페&디저트','학식','기타']
-#   return jsonify({'result':'success', 'category':category})
-  
-###클라이언트 쪽에서 data={} 줘도댐
-@app.route('/api/foodTable',methods=['GET'])
+## 식단표 조회
+@app.route('/api/food_table',methods=['GET'])
 def get_data():
     current_date = datetime.today().strftime('%Y-%m-%d')
     data = db.dormitory_menu.find_one({'date': current_date})
@@ -249,8 +241,8 @@ def get_data():
         subprocess.run(['python', 'dormitory_menu.py'])      
         get_data() 
         
-###클이언트 쪽에서 data ={'id_give':userid}
-@app.route('/api/userInfo',methods=['GET'])
+## 사용자 정보 조회
+@app.route('/api/user_info',methods=['GET'])
 def api_userInfo():
     token_receive = request.cookies.get('mytoken')
     try:
@@ -261,10 +253,6 @@ def api_userInfo():
         return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
     except jwt.exceptions.DecodeError:
         return jsonify({'result': 'fail', 'msg': '유저 정보가 존재하지 않습니다.'})
-    
-
-    
-
   
 if __name__ == '__main__':  
   app.run('0.0.0.0',port=5001,debug=True)
