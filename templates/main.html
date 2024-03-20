@@ -67,25 +67,14 @@ block content %}
       <ul class="flex justify-center items-center flex-wrap">
         {% for category in category_list %}
         <li>
-          {% if filter_category != '*' and filter_category == category %}
           <button
             type="button"
             id="category-{{ loop.index }}"
-            class="m-1 py-1 px-2 rounded bg-pink-300 text-sm category-button select"
+            class="m-1 py-1 px-2 rounded text-sm category-button {% if filter_category == '*' %} bg-pink-300 {% elif filter_category != '*' and filter_category == category %} bg-pink-300 select {% else %}bg-gray-300{% endif %}"
             onclick="clickCategoryTag('{{ loop.index }}')"
           >
             #{{ category }}
           </button>
-          {% else %}
-          <button
-            type="button"
-            id="category-{{ loop.index }}"
-            class="m-1 py-1 px-2 rounded bg-gray-400 text-sm category-button"
-            onclick="clickCategoryTag('{{ loop.index }}')"
-          >
-            #{{ category }}
-          </button>
-          {% endif %}
         </li>
         {% endfor %}
       </ul>
@@ -203,29 +192,13 @@ block content %}
 
   <script>
     const clickCategoryTag = (categoryIndex) => {
-      const categories = document.querySelectorAll(".category-button");
       const selectedCategory = document.getElementById(
         `category-${categoryIndex}`
       );
 
       if (selectedCategory.classList.contains("select")) {
-        categories.forEach((category, index) => {
-          category.classList.remove("select");
-          category.classList.remove("bg-gray-400");
-          category.classList.add("bg-pink-300");
-        });
-
         window.location.replace("/");
       } else {
-        categories.forEach((category, index) => {
-          category.classList.remove("bg-pink-300");
-          category.classList.add("bg-gray-400");
-        });
-
-        selectedCategory.classList.add("select");
-        selectedCategory.classList.remove("bg-gray-400");
-        selectedCategory.classList.add("bg-pink-300");
-
         const filterText = selectedCategory.textContent.trim().slice(1);
         window.location.replace(`/?filter=${filterText}`);
       }
