@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,redirect
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import jwt
@@ -52,24 +52,27 @@ CATEGORY = [ '중식', '양식', '일식', '한식', '패스트푸트', '분식'
 # 메인 페이지
 @app.route('/')
 def deliveryBoardPage():
-  filter = request.args.get('filter', default = '*', type = str)
-  params = { 'filter': filter }
+  try:
+    filter = request.args.get('filter', default = '*', type = str)
+    params = { 'filter': filter }
 
-  cookies = request.cookies
-  card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies, params=params).json()
-  user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
-  food_table_data = requests.get(API_PATH + '/api/food_table').json()["data"]
+    cookies = request.cookies
+    card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies, params=params).json()
+    user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
+    food_table_data = requests.get(API_PATH + '/api/food_table').json()["data"]
 
-  return render_template(
-    'main.html',
-    service_title=SURVICE_TITLE,
-    image =LOGO_URL,
-    card_data=card_data,
-    user_data=user_data,
-    category_list=CATEGORY,
-    food_table_data= food_table_data,
-    filter_category=filter
-  )
+    return render_template(
+      'main.html',
+      service_title=SURVICE_TITLE,
+      image =LOGO_URL,
+      card_data=card_data,
+      user_data=user_data,
+      category_list=CATEGORY,
+      food_table_data= food_table_data,
+      filter_category=filter
+    )
+  except Exception as e:
+    return redirect('/login')
 
 # 로그인
 @app.route('/login')
@@ -78,24 +81,24 @@ def loginPage():
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-    id_receive = request.form['id_give']
-    pw_receive = request.form['pw_give']
+      id_receive = request.form['id_give']
+      pw_receive = request.form['pw_give']
+      
+      pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
+
+      result = db.user.find_one({'id': id_receive, 'pw': pw_hash})
+
+      if result :  ## if result:
     
-    pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
+          payload = {
+              'id': id_receive,
+              'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)
+          }
+          token = jwt.encode(payload, secret_key, algorithm='HS256')
 
-    result = db.user.find_one({'id': id_receive, 'pw': pw_hash})
-
-    if result :  ## if result:
-  
-        payload = {
-            'id': id_receive,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)
-        }
-        token = jwt.encode(payload, secret_key, algorithm='HS256')
-
-        return jsonify({'result': 'success', 'token': token})
-    else:
-        return jsonify({'result': 'fail', 'msg': '아이디 또는 비밀번호가 일치하지 않습니다.'})
+          return jsonify({'result': 'success', 'token': token})
+      else:
+          return jsonify({'result': 'fail', 'msg': '아이디 또는 비밀번호가 일치하지 않습니다.'})
 
 @app.route('/signIn')
 def signInPage():
@@ -215,7 +218,7 @@ def add_join_user():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.update_one({'_id':obj_card_id},{'$push':{'join_user':user_id}})
-    return jsonify({'result': 'success', 'msg': "참가원 추가 성공"})
+    return jsonify({'result': 'success', 'msg': "참가되었습니다!"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
@@ -231,7 +234,7 @@ def remove_join_user():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.update_one({'_id':obj_card_id},{'$pull':{'join_user':user_id}})
-    return jsonify({'result': 'success', 'msg': "참가원 제거 성공"})
+    return jsonify({'result': 'success', 'msg': "취소되었습니다!"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
@@ -247,7 +250,7 @@ def remove_card():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.delete_one({'_id':obj_card_id})
-    return jsonify({'result': 'success', 'msg': "카드 제거 성공"})
+    return jsonify({'result': 'success', 'msg': "카드 삭제 완료!"})
   except jwt.ExpiredSignatureError:
       return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
