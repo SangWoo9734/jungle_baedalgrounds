@@ -124,7 +124,7 @@ block content %}
           {% else %}
           <button
             class="w-full py-1 bg-blue-400 text-white"
-            onclick="joinGroup('{{ card._id }}')"
+            onclick="joinGroup('{{ card._id }}', '{{ card.openchat_url }}')"
           >
             참여
           </button>
@@ -217,7 +217,6 @@ block content %}
     const closeForm = () => {
       const form = document.getElementById("create-group-form");
       form.classList.add("hidden");
-
     };
 
     const sendForm = () => {
@@ -227,11 +226,15 @@ block content %}
       const openChatURL = document.getElementById("openchat_url").value;
       const category = document.getElementById("category").value;
 
-      if (title === '' || content === '' || timeLimit === '' || openChatURL === '') {
-        alert('모든 필드를 입력해주세요.');
+      if (
+        title === "" ||
+        content === "" ||
+        timeLimit === "" ||
+        openChatURL === ""
+      ) {
+        alert("모든 필드를 입력해주세요.");
         return;
       }
-
 
       $.ajax({
         type: "POST",
@@ -251,18 +254,16 @@ block content %}
             alert(result);
             closeForm();
             window.location.href = "/";
-
-          }
-          else{
+          } else {
             alert(response["msg"]);
             $.removeCookie("mytoken", { path: "/" });
             window.location.href = "/login";
           }
-        }
+        },
       });
     };
 
-    const joinGroup = (cardId) => {
+    const joinGroup = (cardId, openchatUrl) => {
       $.ajax({
         type: "POST",
         url: "/api/add_join_user",
@@ -270,16 +271,20 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          if(response["result"]=="success"){
+          if (response["result"] == "success") {
             alert(response["result"]);
+            window.open(openchatUrl);
             window.location.href = "/";
-          }
-          else{
+          } else {
             alert(response["msg"]);
             $.removeCookie("mytoken", { path: "/" });
             window.location.href = "/login";
           }
-        }
+        },
+        error: (error) => {
+          alert(error.msg);
+          location.reload("/");
+        },
       });
     };
     const cancelGroup = (cardId) => {
@@ -290,16 +295,15 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          if(response["result"]=="success"){
+          if (response["result"] == "success") {
             alert(response["result"]);
             window.location.href = "/";
-          }
-          else{
+          } else {
             alert(response["msg"]);
             $.removeCookie("mytoken", { path: "/" });
             window.location.href = "/login";
           }
-        }
+        },
       });
     };
 
@@ -311,19 +315,17 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          if(response["result"]=="success"){
-              alert(response["result"]);
-              window.location.href = "/";
-          }
-          else{
+          if (response["result"] == "success") {
+            alert(response["result"]);
+            window.location.href = "/";
+          } else {
             alert(response["msg"]);
             $.removeCookie("mytoken", { path: "/" });
             window.location.href = "/login";
           }
-        }
+        },
       });
     };
   </script>
-  
 </div>
 {% endblock %}
