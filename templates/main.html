@@ -25,6 +25,7 @@ block content %}
       <button
         class="w-full my-2 py-1 rounded bg-red-400 text-white font-bold"
         type="button"
+        onclick="logout()"
       >
         로그아웃
       </button>
@@ -292,7 +293,7 @@ block content %}
   <script>
     const logout = () => {
       window.location.href = "/login";
-      document.cookie = "myToken =; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+      $.removeCookie("mytoken", { path: "/" });
     };
   </script>
 </div>
