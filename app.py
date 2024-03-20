@@ -117,13 +117,7 @@ def api_confirm():
     if result:
       return jsonify({'result': 'fail', 'msg': '아이디가 중복되었습니다.'})
     else:
-      return jsonify({'result': 'success'})
-      
-    
-    
-  
-
-
+      return jsonify({'result': 'success'})   
 
 #main
 @app.route('/api/isAuth', methods=['GET'])
