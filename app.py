@@ -46,6 +46,7 @@ db = client.dbground
 SURVICE_TITLE = "BAEDALGROUNDS"
 LOGO_URL = './images/logo.png'
 API_PATH = 'http://localhost:5001'
+CATEGORY = [ '중식', '양식', '일식', '한식', '패스트푸트', '분식', '카페, 케이크']
 
 # 메인 페이지
 @app.route('/')
@@ -55,7 +56,7 @@ def deliveryBoardPage():
   card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies).json()
   user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
 
-  return render_template('main.html', service_title=SURVICE_TITLE, image =LOGO_URL, card_data=card_data, user_data=user_data)
+  return render_template('main.html', service_title=SURVICE_TITLE, image =LOGO_URL, card_data=card_data, user_data=user_data, category_list=CATEGORY)
 
 # 로그인
 @app.route('/login')
