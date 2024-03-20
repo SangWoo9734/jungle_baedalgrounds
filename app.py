@@ -4,16 +4,45 @@ from bson.objectid import ObjectId
 import jwt
 import hashlib
 import datetime
-import requests
+import subprocess
+from flask.json.provider import JSONProvider
+import json
+from bson import ObjectId
+import sys
 
 app = Flask(__name__)
+
+####################################################
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
+class CustomJSONProvider(JSONProvider):
+    def dumps(self, obj, **kwargs):
+        return json.dumps(obj, **kwargs, cls=CustomJSONEncoder)
+
+    def loads(self, s, **kwargs):
+        return json.loads(s, **kwargs)
+####################################################
+
+
+# 위에 정의되 custom encoder 를 사용하게끔 설정한다.
+app.json = CustomJSONProvider(app)
+
+
 
 # secret key
 secret_key = 'jungbae'
 
 # mongo db
-client = MongoClient('localhost', 27017)
-db = client.bdground
+# client = MongoClient('localhost', 27017)
+# db = client.bdground
+
+client = MongoClient('mongodb://anuhyun:dksdn@3.36.103.219',27017)
+db = client.dbground
 
 # CONTANTS
 SURVICE_TITLE = "BAEDALGROUNDS"
@@ -201,5 +230,41 @@ def remove_card():
       return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
 
 
+# ###클ㄹ이언트 쪽에서 data ={}
+# @app.route('/api/category',methods=['GET'])
+# def api_category():
+#   #id_receive = request.args.get('userid')
+#   category=['중식','양식','한식','패스트푸드','분식','카페&디저트','학식','기타']
+#   return jsonify({'result':'success', 'category':category})
+  
+###클라이언트 쪽에서 data={} 줘도댐
+@app.route('/api/foodTable',methods=['GET'])
+def get_data():
+    current_date = datetime.today().strftime('%Y-%m-%d')
+    data = db.dormitory_menu.find_one({'date': current_date})
+    ###try except로 바꿀지 고민
+    if data:
+        return jsonify({'result':'success', 'data':data})
+    else:
+        subprocess.run(['python', 'dormitory_menu.py'])      
+        get_data() 
+        
+###클이언트 쪽에서 data ={'id_give':userid}
+@app.route('/api/userInfo',methods=['GET'])
+def api_userInfo():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
+        userinfo = db.user.find_one({'id': payload['id']})
+        return jsonify({'result': 'success', 'name': userinfo['name'] ,'id':userinfo['id']})
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': 'fail', 'msg': '유저 정보가 존재하지 않습니다.'})
+    
+
+    
+
+  
 if __name__ == '__main__':  
   app.run('0.0.0.0',port=5001,debug=True)
