@@ -4,7 +4,7 @@ block content %}
 <!-- left area -->
 <div class="flex flex-col lg:flex-row lg:w-full h-screen">
   <div
-    class="flex justify-evenly items-center w-full p-3 bg-gray-500 lg:flex-col"
+    class="flex flex-col justify-evenly items-center w-full p-3 bg-gray-500 sm:flex-row lg:flex-col"
   >
     <div class="m-4 text-center">
       <img class='w-40'src={{ url_for('static', filename = image) }} alt="logo"
@@ -31,13 +31,13 @@ block content %}
       </button>
     </div>
     <div class="m-4 text-sm">
-      <h4 class="mt-4 mb-2 text-center text-lg font-bold">
-        [ 경기드림타워 오늘의 식단 ]
-      </h4>
-      <div class="flex gap-3">
+      <h4 class="mt-4 mb-2 text-center text-lg font-bold">[ 오늘의 학식 ]</h4>
+      <div class="flex gap-2">
         <div class="bg-blue-400 p-4 text-center rounded-lg">
           <p class="mb-3 text-lg font-bold">중식</p>
-          <ul>
+          <ul
+            class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
+          >
             <li>쌀밥</li>
             <li>사골우거지국</li>
             <li>돈사태김치찜</li>
@@ -49,7 +49,9 @@ block content %}
         </div>
         <div class="bg-blue-400 p-4 text-center rounded-lg">
           <p class="mb-3 text-lg font-bold">석식</p>
-          <ul>
+          <ul
+            class="flex flex-row justify-evenly justify-center sm:flex-col gap-5 flex-wrap"
+          >
             <li>쌀밥</li>
             <li>사골우거지국</li>
             <li>돈사태김치찜</li>
@@ -82,7 +84,7 @@ block content %}
       대기중인 모임 <span class="text-red-500 font-bold">8</span> 개
     </h4>
     <div class="px-3 flex-1 overflow-scroll">
-      <div class="grid grid-cols-4 gap-3 py-3">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 py-3">
         <div class="p-2 rounded-md bg-gray-200 text-sm">
           <img
             src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
@@ -101,7 +103,9 @@ block content %}
             <p>현재 2명</p>
             <p>마감시간: ~18:30</p>
           </div>
-          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+          <button class="w-full py-1 bg-blue-400 text-white" onclick="">
+            참여하기
+          </button>
         </div>
         <div class="p-2 rounded-md bg-gray-200 text-sm">
           <img
@@ -297,4 +301,4 @@ block content %}
     };
   </script>
 </div>
-name {% endblock %}
+{% endblock %}
