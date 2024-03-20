@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 import jwt
 import hashlib
 import datetime
+import requests
 
 app = Flask(__name__)
 
@@ -125,14 +126,7 @@ def post_card():
     except jwt.exceptions.DecodeError:
         return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
 
-# post_card 기능 테스트 라우팅 페이지입니다
-@app.route('/post_card')
-def post_card_page():
-  return render_template('post_card_test.html', service_title=SURVICE_TITLE, image =LOGO_URL)
 
-@app.route('/show_card')
-def show_card_page():
-  return render_template('show_card_test.html', service_title=SURVICE_TITLE, image =LOGO_URL)
 
 # 데이터베이스로부터 master_user_id,join_user를 제외한 데이터를 받아서 넘겨주며 조회중인 사용자가 포함되어있는지 여부를 나타내는 is_join이 추가되어있습니다
 @app.route('/api/show_card')
@@ -144,6 +138,8 @@ def show_cards():
   sending_data=[]
   for card_data in cards_data:
     card_data['_id']=str(card_data['_id'])
+    member_count=len(card_data['join_user'])
+    card_data["member_count":str(member_count)]
     if user_id in card_data['join_user']:
         del card_data['join_user']
         card_data['is_join']=True
