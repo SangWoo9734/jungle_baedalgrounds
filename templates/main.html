@@ -217,6 +217,7 @@ block content %}
     const closeForm = () => {
       const form = document.getElementById("create-group-form");
       form.classList.add("hidden");
+
     };
 
     const sendForm = () => {
@@ -225,6 +226,12 @@ block content %}
       const timeLimit = document.getElementById("time_limit").value;
       const openChatURL = document.getElementById("openchat_url").value;
       const category = document.getElementById("category").value;
+
+      if (title === '' || content === '' || timeLimit === '' || openChatURL === '') {
+        alert('모든 필드를 입력해주세요.');
+        return;
+      }
+
 
       $.ajax({
         type: "POST",
@@ -240,12 +247,18 @@ block content %}
 
         success: function (response) {
           const result = response["result"];
-          alert(result);
           if (result == "success") {
+            alert(result);
             closeForm();
-            location.reload();
+            window.location.href = "/";
+
           }
-        },
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
+        }
       });
     };
 
@@ -257,10 +270,16 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          const result = response["result"];
-          alert(result);
-          location.reload();
-        },
+          if(response["result"]=="success"){
+            alert(response["result"]);
+            window.location.href = "/";
+          }
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
+        }
       });
     };
     const cancelGroup = (cardId) => {
@@ -271,10 +290,16 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          const result = response["result"];
-          alert(result);
-          location.reload();
-        },
+          if(response["result"]=="success"){
+            alert(response["result"]);
+            window.location.href = "/";
+          }
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
+        }
       });
     };
 
@@ -286,12 +311,19 @@ block content %}
           _id: cardId,
         },
         success: (response) => {
-          const result = response["result"];
-          alert(result);
-          location.reload();
-        },
+          if(response["result"]=="success"){
+              alert(response["result"]);
+              window.location.href = "/";
+          }
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
+        }
       });
     };
   </script>
+  
 </div>
 {% endblock %}
