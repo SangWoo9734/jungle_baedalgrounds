@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 import jwt
 import hashlib
 import datetime
+
 app = Flask(__name__)
 
 # secret key
@@ -132,6 +134,7 @@ def post_card_page():
 def show_card_page():
   return render_template('show_card_test.html', service_title=SURVICE_TITLE, image =LOGO_URL)
 
+# 데이터베이스로부터 master_user_id,join_user를 제외한 데이터를 받아서 넘겨주며 조회중인 사용자가 포함되어있는지 여부를 나타내는 is_join이 추가되어있습니다
 @app.route('/api/show_card')
 def show_cards():
   token_receive = request.cookies.get('mytoken')
@@ -149,6 +152,58 @@ def show_cards():
        card_data['is_join']=False
     sending_data.append(card_data)
   return jsonify(sending_data)
+
+# 프론트로부터 _id(문자열)값을 받아 해당하는 모임에 이용자를 참가자로 추가합니다 
+@app.route('/api/add_join_user', methods=['POST'])
+def add_join_user():
+  try:
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
+    user_id= payload['id']
+    card_id = str(request.form['_id'])
+    obj_card_id=ObjectId(card_id)
+    db.cards.update_one({'_id':obj_card_id},{'$push':{'join_user':user_id}})
+    return "참가원 추가 성공"
+  except jwt.ExpiredSignatureError:
+      return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+  except jwt.exceptions.DecodeError:
+      return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
+  
+# 프론트로부터 _id(문자열)값을 받아 해당하는 모임의 참가자 명단에서 이용자를 제거합니다 
+@app.route('/api/remove_join_user', methods=['POST'])
+def remove_join_user():
+  try:
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
+    user_id= payload['id']
+    card_id = str(request.form['_id'])
+    obj_card_id=ObjectId(card_id)
+    db.cards.update_one({'_id':obj_card_id},{'$pull':{'join_user':user_id}})
+    return "참가원 제거 성공"
+  except jwt.ExpiredSignatureError:
+      return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+  except jwt.exceptions.DecodeError:
+      return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
+
+# 프론트로부터 _id(문자열)값을 받아 파티장인지 확인 후 해당카드를 제거합니다 
+@app.route('/api/remove_card', methods=['POST'])
+def remove_card():
+  try:
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
+    user_id= payload['id']
+    card_id = str(request.form['_id'])
+    obj_card_id=ObjectId(card_id)
+    if db.cards.find_one({'_id':obj_card_id})['master_user_id']==user_id:
+      db.cards.delete_one({'_id':obj_card_id})
+      return "카드 제거 성공"
+    else:
+      return "카드제거는 파티장만 할 수 있습니다"
+  except jwt.ExpiredSignatureError:
+      return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+  except jwt.exceptions.DecodeError:
+      return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
+
 
 if __name__ == '__main__':  
   app.run('0.0.0.0',port=5001,debug=True)
