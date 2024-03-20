@@ -11,7 +11,7 @@ endblock %} {% block content %}
       type="text"
       placeholder="이름"
       name="name"
-      id = "username"
+      id="username"
     />
     <div class="w-full my-1 flex justify-center items-center gap-1">
       <input
@@ -20,7 +20,6 @@ endblock %} {% block content %}
         placeholder="아이디"
         name="id"
         id="userid"
-        
       />
       <button
         class="w-20 h-full p-1 border-1 rounded bg-gray-400 text-white"
@@ -42,12 +41,14 @@ endblock %} {% block content %}
       type="password"
       placeholder="비밀번호 확인"
       name="password-check"
-      id = "userpw_confirm"
+      id="userpw_confirm"
     />
-    <button class="w-full p-1 border-1 rounded bg-blue-300 text-white"
-    
-    onclick = "signIn()"
-     >회원가입</button>
+    <button
+      class="w-full p-1 border-1 rounded bg-blue-300 text-white"
+      onclick="signIn()"
+    >
+      회원가입
+    </button>
   </div>
 </div>
 {% endblock %}
