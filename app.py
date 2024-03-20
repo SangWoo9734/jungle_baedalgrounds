@@ -10,6 +10,7 @@ import json
 from bson import ObjectId
 import sys
 import requests
+import pytz
 
 app = Flask(__name__)
 
@@ -51,8 +52,11 @@ CATEGORY = [ '중식', '양식', '일식', '한식', '패스트푸트', '분식'
 # 메인 페이지
 @app.route('/')
 def deliveryBoardPage():
+  filter = request.args.get('filter', default = '*', type = str)
+  params = { 'filter': filter }
+
   cookies = request.cookies
-  card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies).json()
+  card_data = requests.get(API_PATH + '/api/show_card', cookies=cookies, params=params).json()
   user_data = requests.get(API_PATH + '/api/user_info', cookies=cookies).json()
   food_table_data = requests.get(API_PATH + '/api/food_table').json()["data"]
 
@@ -63,7 +67,8 @@ def deliveryBoardPage():
     card_data=card_data,
     user_data=user_data,
     category_list=CATEGORY,
-    food_table_data= food_table_data
+    food_table_data= food_table_data,
+    filter_category=filter
   )
 
 # 로그인
@@ -147,6 +152,14 @@ def post_card():
     time_limit = str(request.form['time_limit'])
     openchat_url = str(request.form['openchat_url'])
     category = str(request.form['category'])
+
+    base_date = datetime.datetime.now().date()
+    time_str=time_limit
+    deadline = datetime.datetime.strptime(f"{base_date} {time_str}", "%Y-%m-%d %H:%M")
+    KST = pytz.timezone('Asia/Seoul')
+    deadline = KST.localize(deadline)
+    deadline= deadline.astimezone(pytz.utc)
+
     try:
         payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
         userinfo = db.user.find_one({'id': payload['id']})
@@ -154,8 +167,9 @@ def post_card():
         master_user_name= userinfo['name']
         join_user=[]
         join_user.append(master_user_id)
-        card_data={'master_user_id':master_user_id,'master_user_name':master_user_name,'title':title,'content':content,'thumbnail_url':thumbnail_url,'time_limit':time_limit,'category':category,'openchat_url':openchat_url, 'join_user':join_user}
+        card_data={'master_user_id':master_user_id,'master_user_name':master_user_name,'title':title,'content':content,'thumbnail_url':thumbnail_url,'time_limit':time_limit,'category':category,'openchat_url':openchat_url, 'join_user':join_user,'deadline':deadline}
         db.cards.insert_one(card_data)
+        db.cards.create_index([("deadline", 1)], expireAfterSeconds=0)
         return jsonify({'result': 'success', 'msg': '카드 등록완료!'})
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
@@ -165,10 +179,12 @@ def post_card():
 # 데이터베이스로부터 master_user_id,join_user를 제외한 데이터를 받아서 넘겨주며 조회중인 사용자가 포함되어있는지 여부를 나타내는 is_join이 추가되어있습니다
 @app.route('/api/show_card')
 def show_cards():
+  filter = request.args.get('filter')
+
   token_receive = request.cookies.get('mytoken')
   payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
   user_id= payload['id']
-  cards_data=list(db.cards.find({}))
+  cards_data=list(db.cards.find({}, {"deadline": 0}))
   sending_data=[]
   for card_data in cards_data:
     card_data['_id']=str(card_data['_id'])
@@ -180,7 +196,12 @@ def show_cards():
     else:
       del card_data['join_user']
       card_data['is_join']=False
-    sending_data.append(card_data)
+    if filter == '*' :
+      sending_data.append(card_data)
+    elif filter != '*' and filter == card_data['category']:
+      sending_data.append(card_data)
+    else :
+      continue
 
   return jsonify(sending_data)
 

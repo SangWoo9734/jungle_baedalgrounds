@@ -66,10 +66,17 @@ block content %}
       <p class="mr-2">모임찾기 키워드 :</p>
       <ul class="flex justify-center items-center flex-wrap">
         {% for category in category_list %}
-        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">
-          #{{ category }}
+        <li>
+          <button
+            type="button"
+            id="category-{{ loop.index }}"
+            class="m-1 py-1 px-2 rounded text-sm category-button {% if filter_category == '*' %} bg-pink-300 {% elif filter_category != '*' and filter_category == category %} bg-pink-300 select {% else %}bg-gray-300{% endif %}"
+            onclick="clickCategoryTag('{{ loop.index }}')"
+          >
+            #{{ category }}
+          </button>
         </li>
-        {% endfor%}
+        {% endfor %}
       </ul>
     </header>
     <h4 class="m-1 px-3">
@@ -184,6 +191,19 @@ block content %}
   </div>
 
   <script>
+    const clickCategoryTag = (categoryIndex) => {
+      const selectedCategory = document.getElementById(
+        `category-${categoryIndex}`
+      );
+
+      if (selectedCategory.classList.contains("select")) {
+        window.location.replace("/");
+      } else {
+        const filterText = selectedCategory.textContent.trim().slice(1);
+        window.location.replace(`/?filter=${filterText}`);
+      }
+    };
+
     const logout = () => {
       window.location.href = "/login";
       $.removeCookie("mytoken", { path: "/" });
@@ -253,13 +273,12 @@ block content %}
           if(response["result"]=="success"){
             alert(response["result"]);
             window.location.href = "/";
-        }
-        else{
-          alert(response["msg"]);
-          $.removeCookie("mytoken", { path: "/" });
-          window.location.href = "/login";
-        }
-
+          }
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
         }
       });
     };
@@ -274,15 +293,13 @@ block content %}
           if(response["result"]=="success"){
             alert(response["result"]);
             window.location.href = "/";
+          }
+          else{
+            alert(response["msg"]);
+            $.removeCookie("mytoken", { path: "/" });
+            window.location.href = "/login";
+          }
         }
-        else{
-          alert(response["msg"]);
-          $.removeCookie("mytoken", { path: "/" });
-          window.location.href = "/login";
-        }
-
-        }
-        
       });
     };
 
@@ -303,7 +320,6 @@ block content %}
             $.removeCookie("mytoken", { path: "/" });
             window.location.href = "/login";
           }
-         
         }
       });
     };
