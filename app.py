@@ -153,6 +153,13 @@ def post_card():
     time_limit = str(request.form['time_limit'])
     openchat_url = str(request.form['openchat_url'])
     category = str(request.form['category'])
+
+    base_date = datetime.datetime.now().date()
+    time_str=time_limit
+    deadline = datetime.datetime.strptime(f"{base_date} {time_str}", "%Y-%m-%d %H:%M")
+    db.collection.create_index([("deadline", 1)], expireAfterSeconds=0)
+
+
     try:
         payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
         userinfo = db.user.find_one({'id': payload['id']})
@@ -160,7 +167,7 @@ def post_card():
         master_user_name= userinfo['name']
         join_user=[]
         join_user.append(master_user_id)
-        card_data={'master_user_id':master_user_id,'master_user_name':master_user_name,'title':title,'content':content,'thumbnail_url':thumbnail_url,'time_limit':time_limit,'category':category,'openchat_url':openchat_url, 'join_user':join_user}
+        card_data={'master_user_id':master_user_id,'master_user_name':master_user_name,'title':title,'content':content,'thumbnail_url':thumbnail_url,'time_limit':time_limit,'category':category,'openchat_url':openchat_url, 'join_user':join_user,'deadline':deadline}
         db.cards.insert_one(card_data)
         return jsonify({'result': 'success', 'msg': '카드 등록완료!'})
     except jwt.ExpiredSignatureError:
@@ -174,7 +181,7 @@ def show_cards():
   token_receive = request.cookies.get('mytoken')
   payload = jwt.decode(token_receive, secret_key, algorithms=['HS256'])
   user_id= payload['id']
-  cards_data=list(db.cards.find({}))
+  cards_data=list(db.cards.find({}, {"deadline": 0}))
   sending_data=[]
   for card_data in cards_data:
     card_data['_id']=str(card_data['_id'])
