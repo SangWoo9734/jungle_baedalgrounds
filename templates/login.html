@@ -1,5 +1,5 @@
-{% extends "base.html" %} {% block title %}{{service_title + ' - 로그인'}}{%
-endblock %} {% block content %}
+{% extends "base.html" %} {% block title %} {{service_title + ' - 로그인'}}
+{%endblock %} {% block content %}
 <div
   class="max-w-screen-sm flex flex-col justify-center items-center h-screen m-auto text-sm"
 >
@@ -11,7 +11,7 @@ endblock %} {% block content %}
       type="text"
       placeholder="아이디"
       name="id"
-      id = "userid"
+      id="userid"
     />
     <input
       class="w-full my-1 p-2 border rounded"
@@ -19,22 +19,26 @@ endblock %} {% block content %}
       type="password"
       placeholder="비밀번호"
       name="password"
-      id = "userpw"
+      id="userpw"
     />
 
     <div class="w-full mt-3 flex justify-between items-center gap-1 text-white">
       <button
         class="w-1/2 p-1 border-1 rounded bg-blue-400"
         type="button"
-        onclick = "login()"
-       >로그인</button>
-      <button class="w-1/2 p-1 border-1 rounded bg-blue-300" type="button" onclick = "signpage()" >
+        onclick="login()"
+      >
+        로그인
+      </button>
+      <button
+        class="w-1/2 p-1 border-1 rounded bg-blue-300"
+        type="button"
+        onclick="signpage()"
+      >
         회원가입
       </button>
     </div>
   </div>
-
 </div>
-
 
 {% endblock %}

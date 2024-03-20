@@ -1,43 +1,299 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+{% extends "base.html" %} {% block title %}{{service_title}}{% endblock %} {%
+block content %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<!-- left area -->
+<div class="flex flex-col lg:flex-row lg:w-full h-screen">
+  <div
+    class="flex justify-evenly items-center w-full p-3 bg-gray-500 lg:flex-col"
+  >
+    <div class="m-4 text-center">
+      <img class='w-40'src={{ url_for('static', filename = image) }} alt="logo"
+      />
+      <img
+        src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+        alt="User Thunmbnail"
+        class="w-20 h-20 m-auto my-2 object-cover rounded-full"
+      />
+      <p class="mb-4 text-lg font-bold">OOO님 환영합니다.</p>
+      <button
+        class="w-full my-2 py-1 rounded bg-blue-400 text-white font-bold"
+        type="button"
+        onclick="openForm()"
+      >
+        모임만들기
+      </button>
+      <button
+        class="w-full my-2 py-1 rounded bg-red-400 text-white font-bold"
+        type="button"
+      >
+        로그아웃
+      </button>
+    </div>
+    <div class="m-4 text-sm">
+      <h4 class="mt-4 mb-2 text-center text-lg font-bold">
+        [ 경기드림타워 오늘의 식단 ]
+      </h4>
+      <div class="flex gap-3">
+        <div class="bg-blue-400 p-4 text-center rounded-lg">
+          <p class="mb-3 text-lg font-bold">중식</p>
+          <ul>
+            <li>쌀밥</li>
+            <li>사골우거지국</li>
+            <li>돈사태김치찜</li>
+            <li>감자고로케</li>
+            <li>도시락김</li>
+            <li>깍두기</li>
+            <li>요구르트</li>
+          </ul>
+        </div>
+        <div class="bg-blue-400 p-4 text-center rounded-lg">
+          <p class="mb-3 text-lg font-bold">석식</p>
+          <ul>
+            <li>쌀밥</li>
+            <li>사골우거지국</li>
+            <li>돈사태김치찜</li>
+            <li>감자고로케</li>
+            <li>도시락김</li>
+            <li>깍두기</li>
+            <li>요구르트</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- right -->
+  <div class="flex flex-col h-full">
+    <header
+      class="flex justify-center items-center m-4 p-3 rounded bg-gray-300"
+    >
+      <p class="mr-2">모임찾기 키워드 :</p>
+      <ul class="flex justify-center items-center flex-wrap">
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#중식</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#양식</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#한식</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#일식</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#패스트푸드</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#분식</li>
+        <li class="m-1 py-1 px-2 rounded bg-pink-300 text-sm">#카페, 디저트</li>
+      </ul>
+    </header>
+    <h4 class="m-1 px-3">
+      대기중인 모임 <span class="text-red-500 font-bold">8</span> 개
+    </h4>
+    <div class="px-3 flex-1 overflow-scroll">
+      <div class="grid grid-cols-4 gap-3 py-3">
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+        <div class="p-2 rounded-md bg-gray-200 text-sm">
+          <img
+            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            alt="delivery thumbnail"
+            class="w-full rounded-md"
+          />
+          <h4 class="text-lg">모일사람~</h4>
+          <p class="mb-1">김철수</p>
+          <p class="mb-1">
+            우리 오늘 굽네치킨 먹을건데 같이 먹을 사람. 4명 급구
+          </p>
+          <ul class="flex items-center">
+            <li class="my-1 py-1 px-2 rounded bg-pink-300 text-xs">#중식</li>
+          </ul>
+          <div class="flex justify-between text-xs flex-wrap my-1">
+            <p>현재 2명</p>
+            <p>마감시간: ~18:30</p>
+          </div>
+          <button class="w-full py-1 bg-blue-400 text-white">참여하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-      function go_signup() {
-          window.location.href = '/signup'
-      }
+  <!-- Group Register Form -->
+  {% block form %}{% endblock %}
 
-      function logout() {
-          window.location.href = '/login'
-      }
-
-      function hi() {
-          $.ajax({
-              type: "GET",
-              url: "/api/isAuth",
-              data: {},
-              success: function (response) {
-                  if (response['result'] == 'success') {
-                      let name = response['name']
-                      alert(`${name}`)
-                  } else {
-                      alert(response['msg'])
-                      window.location.href = '/login'
-                  }
-              }
-          })
-      }
-    </script>
-  </head>
-  <body>
-    <h1>HI</h1>
-    <button onclick = "hi()">hi</button>
-    <button onclick="logout()">로그아웃</button>
-  </body>
-</html>
+  <script>
+    const logout = () => {
+      window.location.href = "/login";
+      document.cookie = "myToken =; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    };
+  </script>
+</div>
+name {% endblock %}
