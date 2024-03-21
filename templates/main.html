@@ -299,6 +299,7 @@ block content %}
               url: "/api/add_join_user",
               data: {
                 _id: cardId,
+                "openchatUrl": openchatUrl,
               },
               success: (response) => {
                 if (response["result"] == "success") {
@@ -307,8 +308,8 @@ block content %}
                   window.location.href = "/";
                 } else {
                   alert(response["msg"]);
-                  $.removeCookie("mytoken", { path: "/" });
-                  window.location.href = "/login";
+                  window.location.href = "/";
+                  
                 }
               },
               error: (error) => {
