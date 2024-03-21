@@ -264,12 +264,11 @@ block content %}
 
               success: function (response) {
                 const result = response["result"];
+                alert(response["msg"]);
                 if (result == "success") {
-                  alert(response["msg"]);
                   closeForm();
                   window.location.href = "/";
                 } else {
-                  alert(response["msg"]);
                   $.removeCookie("mytoken", { path: "/" });
                   window.location.href = "/login";
                 }
@@ -314,11 +313,10 @@ block content %}
                 _id: cardId,
               },
               success: (response) => {
+                alert(response["msg"]);
                 if (response["result"] == "success") {
-                  alert(response["result"]);
                   window.location.href = "/";
                 } else {
-                  alert(response["msg"]);
                   $.removeCookie("mytoken", { path: "/" });
                   window.location.href = "/login";
                 }
@@ -334,11 +332,10 @@ block content %}
                 _id: cardId,
               },
               success: (response) => {
+                  alert(response["msg"]);
                 if (response["result"] == "success") {
-                  alert(response["result"]);
                   window.location.href = "/";
                 } else {
-                  alert(response["msg"]);
                   $.removeCookie("mytoken", { path: "/" });
                   window.location.href = "/login";
                 }

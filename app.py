@@ -119,7 +119,7 @@ def api_signIn():
 
     db.user.insert_one({'id': id_receive, 'pw': pw_hash, 'name': name_receive})
 
-    return jsonify({'result': 'success'})
+    return jsonify({'result': 'success', 'msg': "회원가입이 완료되었습니다."})
 
 #중복확인 api
 @app.route('/api/signIn/confirm',methods = ['POST'])
