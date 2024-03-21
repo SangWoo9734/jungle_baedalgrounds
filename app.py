@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, jsonify,redirect
+import sys
+sys.path.append('./utils')
+
+from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import jwt
@@ -11,6 +14,7 @@ from bson import ObjectId
 import sys
 import requests
 import pytz
+from error import ExpirationError
 
 app = Flask(__name__)
 
@@ -218,20 +222,11 @@ def add_join_user():
     card_id = str(request.form['_id'])
     obj_card_id=ObjectId(card_id)
     db.cards.update_one({'_id':obj_card_id},{'$push':{'join_user':user_id}})
-
-    openchatUrl = str(request.form['openchatUrl'])    #링크 유효성 테스트 시작. 링크도 안타지거나 404가 뜨면 fail이랑 메시지반환
-    try:                                              #원래 main.html에서 result:fail뜨면 토큰박탈하고 로그인으로 쫓아냈는데, 이젠 안함 굳이 필요없음 
-      response=requests.get(openchatUrl)
-      if response==404:
-         return jsonify({'result': 'fail', 'msg': '오픈채팅방 주소가 유효하지 않습니다.'})
-    except Exception as e:
-      return jsonify({'result': 'fail', 'msg': '오픈채팅방 주소가 유효하지 않습니다.'}) #테스트 끝
-
-    return jsonify({'result': 'success', 'msg': "참가되었습니다!"})
+    return jsonify({'result': 'success', 'msg': "참가원 추가 성공"})
   except jwt.ExpiredSignatureError:
-      return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+      return jsonify({'result': 'fail', 'type':'login', 'msg': '로그인 시간이 만료되었습니다.'})
   except jwt.exceptions.DecodeError:
-      return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
+      return jsonify({'result': 'fail', 'type':'login', 'msg': '로그인 정보가 존재하지 않습니다.'})
   
 # 프론트로부터 _id(문자열)값을 받아 해당하는 모임의 참가자 명단에서 이용자를 제거합니다 
 @app.route('/api/remove_join_user', methods=['POST'])

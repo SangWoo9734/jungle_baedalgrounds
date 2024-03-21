@@ -262,36 +262,20 @@ block content %}
                 thumbnail_url: "",
               },
 
-        success: function (response) {
-          const result = response["result"];
-          if (result == "success") {
-            alert(response["msg"]);
-            closeForm();
-            window.location.href = "/";
-
-          }
-          else{
-            alert(response["msg"]);
-            $.removeCookie("mytoken", { path: "/" });
-            window.location.href = "/login";
-          }
-        }
-      });
-    };
-          //     success: function (response) {
-          //       const result = response["result"];
-          //       if (result == "success") {
-          //         alert(result);
-          //         closeForm();
-          //         window.location.href = "/";
-          //       } else {
-          //         alert(response["msg"]);
-          //         $.removeCookie("mytoken", { path: "/" });
-          //         window.location.href = "/login";
-          //       }
-          //     },
-          //   });
-          // };
+              success: function (response) {
+                const result = response["result"];
+                if (result == "success") {
+                  alert(response["msg"]);
+                  closeForm();
+                  window.location.href = "/";
+                } else {
+                  alert(response["msg"]);
+                  $.removeCookie("mytoken", { path: "/" });
+                  window.location.href = "/login";
+                }
+              },
+            });
+          };
 
           const joinGroup = (cardId, openchatUrl) => {
             $.ajax({
@@ -303,13 +287,17 @@ block content %}
               },
               success: (response) => {
                 if (response["result"] == "success") {
-                  alert(response["msg"]);
                   window.open(openchatUrl);
                   window.location.href = "/";
                 } else {
-                  alert(response["msg"]);
-                  window.location.href = "/";
-                  
+                  if (response['type'] === 'group') {
+                    alert(response["msg"]);
+                    location.reload();
+                  }
+                  else {
+                    $.removeCookie("mytoken", { path: "/" });
+                    window.location.href = "/login";
+                  }
                 }
               },
               error: (error) => {
@@ -327,7 +315,7 @@ block content %}
               },
               success: (response) => {
                 if (response["result"] == "success") {
-                  alert(response["msg"]);
+                  alert(response["result"]);
                   window.location.href = "/";
                 } else {
                   alert(response["msg"]);
@@ -347,7 +335,7 @@ block content %}
               },
               success: (response) => {
                 if (response["result"] == "success") {
-                  alert(response["msg"]);
+                  alert(response["result"]);
                   window.location.href = "/";
                 } else {
                   alert(response["msg"]);
