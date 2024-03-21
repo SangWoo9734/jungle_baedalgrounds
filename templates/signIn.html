@@ -43,12 +43,20 @@ endblock %} {% block content %}
       name="password-check"
       id="userpw_confirm"
     />
-    <button
-      class="w-full p-1 border-1 rounded bg-indigo-300 text-white"
-      onclick="signIn()"
-    >
-      회원가입
-    </button>
+    <div class="flex gap-1 w-full">
+      <button
+        class="flex-1 p-1 border-1 rounded bg-indigo-300 text-white"
+        onclick="signIn()"
+      >
+        회원가입
+      </button>
+      <button
+        class="w-20 p-1 border-1 rounded bg-gray-400 text-white"
+        onclick="window.history.back()"
+      >
+        뒤로
+      </button>
+    </div>
   </div>
 </div>
 {% endblock %}
