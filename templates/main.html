@@ -89,7 +89,7 @@ block content %}
         {% for card in card_data %}
         <div class="p-3 rounded-md bg-gray-200 text-sm">
           <img
-            src="https://fujifilm-x.com/wp-content/uploads/2021/01/gfx100s_sample_04_thum-1.jpg"
+            src="{{card.thumbnail_url}}"
             alt="delivery thumbnail"
             class="w-full rounded-md"
           />
@@ -157,7 +157,9 @@ block content %}
           <div class="w-80 p-4 rounded bg-gray-200">
             <div>
               <p class="mt-2 mb-1 font-bold">사진 업로드</p>
-              <input type="file" accept="image/*" id="thumbnail_url" class="w-full" />
+              <form id = "upload-file">
+                <input type="file" accept="image/*" id="thumbnail_url" name='file' />
+              </form>
               <p class="mt-2 mb-1 font-bold">제목</p>
               <input
                 class="w-full p-1 border border-gray-400 rounded"
@@ -239,6 +241,7 @@ block content %}
             const timeLimit = document.getElementById("time_limit").value;
             const openChatURL = document.getElementById("openchat_url").value;
             const category = document.getElementById("category").value;
+            const thumbnailURL = document.getElementById('thumbnail_url').files[0].name;
 
             if (
               title === "" ||
@@ -259,15 +262,16 @@ block content %}
                 time_limit: timeLimit,
                 openchat_url: openChatURL,
                 category,
-                thumbnail_url: "",
+                thumbnail_url: thumbnailURL,
               },
 
               success: function (response) {
                 const result = response["result"];
                 alert(response["msg"]);
                 if (result == "success") {
+                  save();
                   closeForm();
-                  window.location.href = "/";
+                  window.location.reload();
                 } else {
                   $.removeCookie("mytoken", { path: "/" });
                   window.location.href = "/login";
@@ -342,6 +346,22 @@ block content %}
               },
             });
           };
+
+          function save() {
+            var form_data = new FormData($('#upload-file')[0]);
+            
+            $.ajax({
+                type: 'POST',
+                url: '/api/fileupload',
+                data: form_data,
+                processData: false,
+                contentType: false,
+                success: function(data){
+                  alert("파일이 업로드 되었습니다!!");
+                }
+            });
+          }
+
         </script>
       </div>
       {% endblock %}

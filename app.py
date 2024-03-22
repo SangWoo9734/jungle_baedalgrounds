@@ -1,7 +1,7 @@
 import sys
 sys.path.append('./utils')
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,redirect
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import jwt
@@ -15,6 +15,17 @@ import sys
 import requests
 import pytz
 from error import ExpirationError
+import boto3
+
+import os
+from dotenv import load_dotenv
+load_dotenv('.venv/data.env')
+
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
+AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
+BUCKET = os.getenv('BUCKET')
+
 
 app = Flask(__name__)
 
@@ -50,6 +61,7 @@ db = client.dbground
 # CONTANTS
 SURVICE_TITLE = "BAEDALGROUNDS"
 LOGO_URL = './images/logo.png'
+IMAGE_DEFAULT_PATH = 'https://dbground-bucket.s3.ap-northeast-2.amazonaws.com/'
 API_PATH = 'http://localhost:5001'
 CATEGORY = [ '중식', '양식', '일식', '한식', '패스트푸트', '분식', '카페, 케이크']
 
@@ -155,7 +167,7 @@ def post_card():
     token_receive = request.cookies.get('mytoken')
     title = str(request.form['title'])
     content = str(request.form['content'])
-    thumbnail_url = str(request.form['thumbnail_url'])
+    thumbnail_url = IMAGE_DEFAULT_PATH + str(request.form['thumbnail_url'])
     time_limit = str(request.form['time_limit'])
     openchat_url = str(request.form['openchat_url'])
     category = str(request.form['category'])
@@ -284,6 +296,22 @@ def api_user_info():
         return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
     except jwt.exceptions.DecodeError:
         return jsonify({'result': 'fail', 'msg': '유저 정보가 존재하지 않습니다.'})
+      
+
+
+@app.route('/api/fileupload', methods=['POST'])
+def file_upload():
+    file = request.files['file']
+    
+    s3 = boto3.client('s3', aws_access_key_id = AWS_ACCESS_KEY, aws_secret_access_key = AWS_SECRET_KEY)
+    s3.put_object(
+        ACL="public-read",
+        Bucket= "dbground-bucket", # "{버킷이름}",
+        Body=file, # 업로드할 파일 객체
+        Key=file.filename, # S3에 업로드할 파일의 경로
+        ContentType=file.content_type # 메타데이터 설정
+    ) 
+    return jsonify({'result': 'success'})
   
 if __name__ == '__main__':  
   app.run('0.0.0.0',port=5001,debug=True)
